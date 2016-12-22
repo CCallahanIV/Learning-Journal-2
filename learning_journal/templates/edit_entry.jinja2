@@ -1,0 +1,10 @@
+{% extends "layout.jinja2" %}
+{% block body %}
+    <form>
+        <h3>Title:</h3>
+        <input type="text" id="entryTitle" placeholder="Enter Title Here..." value="{{ entry.title }}">
+        <h3>Body:</h3>
+        <textarea id="entryBody">{{ entry.body }}</textarea>
+        <input type="submit" id="submitButton">
+    </form>
+{% endblock %}

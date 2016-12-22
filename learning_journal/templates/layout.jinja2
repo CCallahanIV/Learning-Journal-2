@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<!-- MAIN PAGE -->
+<html>
+    <head>
+        <meta charset-"UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Share+Tech+Mono' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="{{ request.static_path('learning_journal_basic:static/reset.css') }}">
+        <link rel="stylesheet" href="{{ request.static_path('learning_journal_basic:static/base.css') }}">
+        <link rel="stylesheet" href="{{ request.static_path('learning_journal_basic:static/layout.css') }}">
+        <link rel="stylesheet" href="{{ request.static_path('learning_journal_basic:static/module.css') }}">
+    </head>
+    <body>
+    <header>
+        <a href="{{ request.route_url('home') }}">Home</a>
+        <a href="{{ request.route_url('create') }}">New Entry</a>
+    </header>
+    <main>
+        {% block body %}{% endblock %}
+    </main>
+    </body>
+</html>
