@@ -6,7 +6,7 @@
             {% for entry in entries|reverse %}
                 <li class="entryListItem">
                     <h3><a href="{{ request.route_url('detail', id=entry.id) }}">{{ entry.title }}</a></h3>
-                    <p class="date">Created {{ entry.creation_date }}></p>
+                    <p class="date">Created {{ entry.creation_date }}</p>
                     <hr />
                 </li>
             {% endfor %}

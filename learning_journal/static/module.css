@@ -1,0 +1,72 @@
+#entryListWrapper{
+    width: 80%;
+    margin: auto;
+    min-width: 320px;
+    height: 100%;
+    background-color: lightgrey;
+}
+
+#entryDisplayWrapper{
+    width: 80%;
+    margin: auto;
+    display: block;
+    margin-bottom: 10px;
+}
+
+#entryTitleWrapper{
+    width: 100%;
+    background: lightgrey;
+    margin-bottom: 20px;
+}
+
+#entryWrapper p{
+    margin-bottom: 20px;
+}
+
+.date{
+    font-size: 0.8em;
+    font-color: grey;
+    font-style: italic;
+}
+
+.entryListItem{
+    margin-bottom: 10px;
+}
+
+/*BEGIN FORM STYLES*/
+
+form{
+    display: block;
+    width: 100%;
+}
+
+form #entryTitle{
+    display: block;
+    width: 90%;
+    margin: auto;
+    line-height: 2.0em;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+form #entryBody{
+    display: block;
+    width: 90%;
+    margin: auto;
+    margin-bottom: 20px;
+    height: 400px;
+/*    box-sizing: border-box;
+    resize: none;*/
+}
+
+form #submitButton{
+    display: block;
+    width: 60%;
+    height: 40px;
+    margin: auto;
+    font-size: 1.5em;
+}
+
+#pageTitle{
+    text-align: center;
+}
