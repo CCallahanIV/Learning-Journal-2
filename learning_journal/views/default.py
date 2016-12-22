@@ -23,35 +23,31 @@ def create_view(request):
         entry = request.POST
         row = Entries(title=entry["title"], creation_date=date.today(), body=entry["body"])
         request.dbsession.add(row)
+        return HTTPFound(request.route_url("home"))
     return {}
 
 
-# @view_config(route_name="home", renderer="templates/list.jinja2")
-# def home_page(request):
-#     """View for the home page."""
-#     return {"entries": ENTRIES}
+@view_config(route_name="detail", renderer="../templates/entry.jinja2")
+def detail_view(request):
+    """Handle the detail view for a specific journal entry."""
+    the_id = int(request.matchdict["id"])
+    entry = request.dbsession.query(Entries).get(the_id)
+    return {"entry": entry}
 
 
-# @view_config(route_name="detail", renderer="templates/entry.jinja2")
-# def detail_view(request):
-#     """Handle the detail view for a specific journal entry."""
-#     the_id = int(request.matchdict["id"])
-#     entry = ENTRIES[the_id]
-#     return {"entry": entry}
-
-
-# @view_config(route_name="create", renderer="templates/create_entry.jinja2")
-# def create_view(request):
-#     """Handle the view for creating a new entry."""
-#     return {}
-
-
-# @view_config(route_name="update", renderer="templates/edit_entry.jinja2")
-# def update_view(request):
-#     """Handle the view for updating a new entry."""
-#     the_id = int(request.matchdict["id"])
-#     entry = ENTRIES[the_id]
-#     return {"entry": entry}
+@view_config(route_name="update", renderer="../templates/edit_entry.jinja2")
+def update_view(request):
+    """Handle the view for updating a new entry."""
+    the_id = int(request.matchdict["id"])
+    if request.method == "POST":
+        entry = request.POST
+        query = request.dbsession.query(Entries).get(the_id)
+        query.title = entry["title"]
+        query.body = entry["body"]
+        request.dbsession.flush()
+        return HTTPFound(request.route_url("home"))
+    entry = request.dbsession.query(Entries).get(the_id)
+    return {"entry": entry}
 
 
 
