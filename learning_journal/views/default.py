@@ -1,25 +1,28 @@
 from pyramid.response import Response
 from pyramid.view import view_config
+from pyramid.httpexceptions import HTTPFound
+from datetime import date
 
 from sqlalchemy.exc import DBAPIError
 
-from ..models import MyModel
+from ..models import Entries
 
 
-@view_config(route_name='home', renderer='../templates/mytemplate.jinja2')
+@view_config(route_name='home', renderer='../templates/list.jinja2')
 def my_view(request):
     try:
-        query = request.dbsession.query(MyModel)
-        one = query.filter(MyModel.name == 'one').first()
+        query = request.dbsession.query(Entries).all()
     except DBAPIError:
         return Response(db_err_msg, content_type='text/plain', status=500)
-    return {'one': one, 'project': 'learning_journal'}
+    return {'entries': query}
 
 
-@view_config(route_name='create', renderer='../templates/form.jinja2')
+@view_config(route_name='create', renderer='../templates/create_entry.jinja2')
 def create_view(request):
     if request.method == "POST":
-        # Get the form stuff
+        entry = request.POST
+        row = Entries(title=entry["title"], creation_date=date.today(), body=entry["body"])
+        request.dbsession.add(row)
     return {}
 
 
@@ -29,26 +32,26 @@ def create_view(request):
 #     return {"entries": ENTRIES}
 
 
-@view_config(route_name="detail", renderer="templates/entry.jinja2")
-def detail_view(request):
-    """Handle the detail view for a specific journal entry."""
-    the_id = int(request.matchdict["id"])
-    entry = ENTRIES[the_id]
-    return {"entry": entry}
+# @view_config(route_name="detail", renderer="templates/entry.jinja2")
+# def detail_view(request):
+#     """Handle the detail view for a specific journal entry."""
+#     the_id = int(request.matchdict["id"])
+#     entry = ENTRIES[the_id]
+#     return {"entry": entry}
 
 
-@view_config(route_name="create", renderer="templates/create_entry.jinja2")
-def create_view(request):
-    """Handle the view for creating a new entry."""
-    return {}
+# @view_config(route_name="create", renderer="templates/create_entry.jinja2")
+# def create_view(request):
+#     """Handle the view for creating a new entry."""
+#     return {}
 
 
-@view_config(route_name="update", renderer="templates/edit_entry.jinja2")
-def update_view(request):
-    """Handle the view for updating a new entry."""
-    the_id = int(request.matchdict["id"])
-    entry = ENTRIES[the_id]
-    return {"entry": entry}
+# @view_config(route_name="update", renderer="templates/edit_entry.jinja2")
+# def update_view(request):
+#     """Handle the view for updating a new entry."""
+#     the_id = int(request.matchdict["id"])
+#     entry = ENTRIES[the_id]
+#     return {"entry": entry}
 
 
 

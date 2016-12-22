@@ -3,16 +3,15 @@ from sqlalchemy import (
     Index,
     Integer,
     Unicode,
+    Date
 )
 
 from .meta import Base
 
 
-class MyModel(Base):
-    __tablename__ = 'models'
+class Entries(Base):
+    __tablename__ = 'entries'
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode)
-    value = Column(Integer)
-
-
-Index('my_index', MyModel.name, unique=True, mysql_length=255)
+    title = Column(Unicode)
+    creation_date = Column(Date)
+    body = Column(Unicode)
