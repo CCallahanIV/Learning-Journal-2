@@ -1,0 +1,13 @@
+{% extends "layout.jinja2" %}
+{% block body %}
+    <div id="entryDisplayWrapper">
+        <div id="entryTitleWrapper">
+            <h1 class="articleTitle">{{ entry.title }}</h1>
+                <p class="date">{{ entry.creation_date }}</p>
+                <p id="author">by Ted Callahan</p>
+        </div>
+        <div id=#entryWrapper>
+           {{ entry.body }}
+        </div>
+        <a href="{{ request.route_url('update', id=entry.id) }}">EDIT</a>
+{% endblock %}
