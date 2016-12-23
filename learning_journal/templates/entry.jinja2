@@ -7,7 +7,7 @@
                 <p id="author">by Ted Callahan</p>
         </div>
         <div id=#entryWrapper>
-           {{ entry.body }}
+           {{ entry.body|e }}
         </div>
         <a href="{{ request.route_url('update', id=entry.id) }}">EDIT</a>
 {% endblock %}

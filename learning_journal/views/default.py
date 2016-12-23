@@ -9,7 +9,7 @@ from ..models import Entries
 
 
 @view_config(route_name='home', renderer='../templates/list.jinja2')
-def my_view(request):
+def home_view(request):
     try:
         query = request.dbsession.query(Entries).all()
     except DBAPIError:
