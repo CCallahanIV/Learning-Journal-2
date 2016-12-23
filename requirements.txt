@@ -3,7 +3,7 @@ decorator==4.0.10
 ipython==5.1.0
 ipython-genutils==0.1.0
 Jinja2==2.8
--e git+https://github.com/CCallahanIV/Learning-Journal-2.git@71503ab20b687258f7aa9f81f89162c8d4670476#egg=learning_journal
+-e git+https://github.com/CCallahanIV/Learning-Journal-2.git@3d6d97c9cbacfbbc2ee2a58871997582845e055b#egg=learning_journal
 Mako==1.0.6
 MarkupSafe==0.23
 PasteDeploy==1.5.2
