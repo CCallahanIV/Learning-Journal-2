@@ -50,9 +50,9 @@ def main(argv=sys.argv):
         {"title": "First Time Entering On the New Site", "creation_date": datetime.strptime("December 22, 2016", "%B %d, %Y"), "body": "This is pretty exciting. This is the first time I'll actually be writing my journal entry in the form I created! Of course it won't persist until I upgrade it to Postgres, BUT STILL. Pretty cool. Getting the chance to work from an emptier plate today really helped alleviate some pressure. I'm very much looking forward to next week for the opportunity to go back through past assignments with a fine tooth comb and improve things, first by learning from earlier mistakes, and second by getting some points back. Hopefully, time permitting, I'll be able to work a bit on the twitter app. Going back to Javascript after three intensive weeks of Python should be a trip."}
     ]
 
-    with transaction.manager:
-        dbsession = get_tm_session(session_factory, transaction.manager)
+    # with transaction.manager:
+    #     dbsession = get_tm_session(session_factory, transaction.manager)
 
-        for entry in ENTRIES:
-            row = Entries(title=entry["title"], creation_date=entry["creation_date"], body=entry["body"])
-            dbsession.add(row)
+    #     for entry in ENTRIES:
+    #         row = Entries(title=entry["title"], creation_date=entry["creation_date"], body=entry["body"])
+    #         dbsession.add(row)
