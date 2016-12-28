@@ -69,7 +69,6 @@ def dummy_request(db_session):
 def add_models(dummy_request):
     """Add a bunch of model instances to the database.
 
-    Every test that includes this fixture will add new random expenses.
     """
     for entry in ENTRIES:
             row = Entries(title=entry["title"], creation_date=entry["creation_date"], body=entry["body"])
@@ -87,7 +86,7 @@ ENTRIES = [
 
 # ======== UNIT TESTS ==========
 
-def test_new_expenses_are_added(db_session):
+def test_new_entries_are_added(db_session):
     """New expenses get added to the database."""
     for entry in ENTRIES:
             row = Entries(title=entry["title"], creation_date=entry["creation_date"], body=entry["body"])
@@ -153,22 +152,45 @@ def fill_the_db(testapp):
             dbsession.add(row)
 
 
-def test_home_route_has_table(testapp):
+def test_home_route_has_list(testapp):
     """The home page has a table in the html."""
     response = testapp.get('/', status=200)
     html = response.html
     assert len(html.find_all("ul")) == 1
 
 
-def test_home_route_with_data_has_filled_table(testapp, fill_the_db):
+def test_home_route_with_data_has_filled_list(testapp, fill_the_db):
     """When there's data in the database, the home page has some rows."""
     response = testapp.get('/', status=200)
     html = response.html
-    assert len(html.find_all("tr")) == 101
+    assert len(html.find_all("li")) == 6
 
 
-def test_home_route_has_table2(testapp):
+def test_home_route_has_list2(testapp):
     """Without data the home page only has the header row in its table."""
     response = testapp.get('/', status=200)
     html = response.html
-    assert len(html.find_all("tr")) == 1
+    assert len(html.find_all("ul")) == 1
+
+
+def test_create_entry_route_has_form(testapp):
+    """Test that the "create" route loads a page with a form."""
+    response = testapp.get('/journal/new-entry', status=200)
+    html = response.html
+    assert len(html.find_all("form")) == 1
+
+
+def test_update_route_has_populated_form(testapp, fill_the_db):
+    """Test the upate has a populated form."""
+    response = testapp.get('/journal/1/edit-entry', status=200)
+    title = response.html.form.input["value"]
+    body = response.html.form.textarea.contents[0]
+    assert title == ENTRIES[0]["title"]
+    assert body == ENTRIES[0]["body"]
+
+
+def test_detail_route_loads_proper_entry(testapp, fill_the_db):
+    """Test that the detail route loads the proper entry."""
+    response = testapp.get('/journal/2', status=200)
+    title = response.html.find_all(class_='articleTitle')[0].contents[0]
+    assert title == ENTRIES[1]["title"]
