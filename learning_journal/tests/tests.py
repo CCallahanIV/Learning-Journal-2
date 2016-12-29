@@ -108,6 +108,28 @@ def test_home_view_returns_objects_when_exist(dummy_request, add_models):
     result = home_view(dummy_request)
     assert len(result["entries"]) == 6
 
+
+def test_create_view_returns_empty_dict_on_get(dummy_request):
+    """Test that the create_view method returns an empty dict on a get request."""
+    from learning_journal.views.default import create_view
+    result = create_view(dummy_request)
+    assert result == {}
+
+
+def test_create_view_updates_db_on_post(db_session, dummy_request):
+    """Test that the create_view method updates the DB with a POST request."""
+    from learning_journal.views.default import create_view
+    dummy_request.method = "POST"
+    dummy_request.POST["title"] = "Some Title."
+    dummy_request.POST["body"] = "Some Body."
+    with pytest.raises(Exception):
+        create_view(dummy_request)
+
+    query = db_session.query(Entries).all()
+    assert query[0].title == "Some Title."
+    assert query[0].body == "Some Body."
+
+
 # ======== FUNCTIONAL TESTS ===========
 
 
@@ -180,13 +202,48 @@ def test_create_entry_route_has_form(testapp):
     assert len(html.find_all("form")) == 1
 
 
+def test_create_view_post_redirects(testapp):
+    """Test that a post request redirects to home."""
+    post_params = {
+        'title': 'Some Title.',
+        'body': 'Some Body.'
+    }
+    response = testapp.post('/journal/new-entry', post_params, status=302)
+    full_response = response.follow()
+    assert response.text[0:3] == '302'
+    assert len(full_response.html.find_all(id='entryListWrapper')) == 1
+
+
+def test_create_view_adds_to_db(testapp):
+    """Test that a post method to create view updates the db."""
+    post_params = {
+        'title': 'Some Title.',
+        'body': 'Some Body.'
+    }
+    response = testapp.post('/journal/new-entry', post_params, status=302)
+    full_response = response.follow()
+    assert full_response.html.find(class_='entryListItem').a.text == post_params["title"]
+
+
 def test_update_route_has_populated_form(testapp, fill_the_db):
-    """Test the upate has a populated form."""
+    """Test the update view has a populated form."""
     response = testapp.get('/journal/1/edit-entry', status=200)
     title = response.html.form.input["value"]
     body = response.html.form.textarea.contents[0]
     assert title == ENTRIES[0]["title"]
     assert body == ENTRIES[0]["body"]
+
+
+def test_update_view_post_redirects_changes_title(testapp, fill_the_db):
+    """Test the update view redirects on a post request and changes title."""
+    post_params = {
+        'title': 'Some Title.',
+        'body': 'Some Body.'
+    }
+    response = testapp.post('/journal/2/edit-entry', post_params, status=302)
+    full_response = response.follow()
+    assert response.text[0:3] == '302'
+    assert full_response.html.find_all(href='http://localhost/journal/2')[0].text == post_params["title"]
 
 
 def test_detail_route_loads_proper_entry(testapp, fill_the_db):
