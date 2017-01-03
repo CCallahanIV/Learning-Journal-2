@@ -9,5 +9,7 @@
         <div id=#entryWrapper>
            {{ entry.body|e }}
         </div>
-        <a href="{{ request.route_url('update', id=entry.id) }}">EDIT</a>
+        {% if request.authenticated_userid %}
+          <a href="{{ request.route_url('update', id=entry.id) }}">EDIT</a>
+        {% endif %}
 {% endblock %}

@@ -49,6 +49,7 @@ def db_session(configuration, request):
 
     def teardown():
         session.transaction.rollback()
+        Entries.__table__.drop(engine)
 
     request.addfinalizer(teardown)
     return session
@@ -166,6 +167,10 @@ def testapp():
     engine = SessionFactory().bind
     Base.metadata.create_all(bind=engine)
 
+    with transaction.manager:
+        dbsession = get_tm_session(SessionFactory, transaction.manager)
+        dbsession.query(Entries).delete()
+
     return testapp
 
 
@@ -179,13 +184,14 @@ def fill_the_db(testapp):
     SessionFactory = testapp.app.registry["dbsession_factory"]
     with transaction.manager:
         dbsession = get_tm_session(SessionFactory, transaction.manager)
-        for entry in ENTRIES:
-            row = Entries(title=entry["title"], creation_date=entry["creation_date"], body=entry["body"])
-            dbsession.add(row)
+        if len(dbsession.query(Entries).all()) == 0:
+            for entry in ENTRIES:
+                row = Entries(title=entry["title"], creation_date=entry["creation_date"], body=entry["body"])
+                dbsession.add(row)
 
 
 def test_home_route_has_list(testapp):
-    """The home page has a table in the html."""
+    """The home page has a list in the html."""
     response = testapp.get('/', status=200)
     html = response.html
     assert len(html.find_all("ul")) == 1
@@ -199,7 +205,7 @@ def test_home_route_with_data_has_filled_list(testapp, fill_the_db):
 
 
 def test_home_route_has_list2(testapp):
-    """Without data the home page only has the header row in its table."""
+    """Without data the home page only has a list."""
     response = testapp.get('/', status=200)
     html = response.html
     assert len(html.find_all("ul")) == 1
@@ -244,7 +250,7 @@ def test_update_route_has_populated_form(testapp, fill_the_db):
     assert body == ENTRIES[0]["body"]
 
 
-def test_update_view_post_redirects_changes_title(testapp, fill_the_db):
+def test_update_view_post_redirects_changes_title(testapp):
     """Test the update view redirects on a post request and changes title."""
     post_params = {
         'title': 'Some Title.',
