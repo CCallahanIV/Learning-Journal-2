@@ -10,7 +10,7 @@ from learning_journal.security import check_credentials
 from pyramid.security import remember, forget
 
 
-@view_config(route_name='login', renderer='../templates/login.jinja2', permissions="guest")
+@view_config(route_name='login', renderer='../templates/login.jinja2', permission="guest")
 def login_view(request):
     """Handle the login view."""
     if request.method == 'POST':
@@ -26,10 +26,10 @@ def login_view(request):
 def logout_view(request):
     """Handle logging the user out."""
     auth_head = forget(request)
-    return HTTPFound(request.route_url("list"), headers=auth_head)
+    return HTTPFound(request.route_url("home"), headers=auth_head)
 
 
-@view_config(route_name='home', renderer='../templates/list.jinja2', permissions="guest")
+@view_config(route_name='home', renderer='../templates/list.jinja2', permission="guest")
 def home_view(request):
     try:
         query = request.dbsession.query(Entries).all()
@@ -38,7 +38,7 @@ def home_view(request):
     return {'entries': query}
 
 
-@view_config(route_name='create', renderer='../templates/create_entry.jinja2', permissions='author')
+@view_config(route_name='create', renderer='../templates/create_entry.jinja2', permission='author')
 def create_view(request):
     if request.method == "POST":
         entry = request.POST
@@ -48,7 +48,7 @@ def create_view(request):
     return {}
 
 
-@view_config(route_name="detail", renderer="../templates/entry.jinja2", permissions='guest')
+@view_config(route_name="detail", renderer="../templates/entry.jinja2", permission='guest')
 def detail_view(request):
     """Handle the detail view for a specific journal entry."""
     the_id = int(request.matchdict["id"])
@@ -56,7 +56,7 @@ def detail_view(request):
     return {"entry": entry}
 
 
-@view_config(route_name="update", renderer="../templates/edit_entry.jinja2", permissions='author')
+@view_config(route_name="update", renderer="../templates/edit_entry.jinja2", permission='author')
 def update_view(request):
     """Handle the view for updating a new entry."""
     the_id = int(request.matchdict["id"])
