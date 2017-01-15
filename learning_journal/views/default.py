@@ -9,6 +9,9 @@ from learning_journal.models import Entries
 from learning_journal.security import check_credentials
 from pyramid.security import remember, forget
 
+import twitter
+import os
+
 
 @view_config(route_name='login', renderer='../templates/login.jinja2', permission="guest")
 def login_view(request):
@@ -71,6 +74,32 @@ def update_view(request):
     return {"entry": entry}
 
 
+@view_config(route_name="delete")
+def delete_view(request):
+    """Handle deleting a post."""
+    the_id = int(request.matchdict["id"])
+    if request.authenticated_userid:
+        entry = request.dbsession.query(Entries).get(the_id)
+        request.dbsession.delete(entry)
+    return HTTPFound(request.route_url("home"))
+
+
+@view_config(route_name="tweet")
+def tweet_view(request):
+    """Handle tweeting the title of a post with link to post."""
+    the_id = request.matchdict["id"]
+    if request.authenticated_userid:
+        twitter_api = twitter.Api(
+            consumer_key=os.environ.get("TWITTER_CONSUMER_KEY", None),
+            consumer_secret=os.environ.get("TWITTER_SECRET", None),
+            access_token_key=os.environ.get("TWITTER_ACCESS_TOKEN", None),
+            access_token_secret=os.environ.get("TWITTER_ACCESS_TOKEN_SECRET", None)
+        )
+        post_url = "https://tedsbetterlearningjournal.herokuapp.com/journal/" + the_id
+        title = request.dbsession.query(Entries).get(the_id).title
+        twitter_api.PostUpdate(title + '\n' + post_url)
+
+    return HTTPFound(request.route_url("home"))
 
 db_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem

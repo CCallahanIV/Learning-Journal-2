@@ -21,6 +21,7 @@ requires = [
     'ipython',
     'psycopg2',
     'passlib',
+    'python-twitter'
     ]
 
 tests_require = [
