@@ -134,7 +134,7 @@ def test_create_view_updates_db_on_post(db_session, dummy_request):
 
 
 @pytest.fixture
-def testapp():
+def testapp(request):
     """Create an instance of webtests TestApp for testing routes.
 
     With the alchemy scaffold we need to add to our test application the
@@ -167,9 +167,14 @@ def testapp():
     engine = SessionFactory().bind
     Base.metadata.create_all(bind=engine)
 
-    with transaction.manager:
-        dbsession = get_tm_session(SessionFactory, transaction.manager)
-        dbsession.query(Entries).delete()
+    def tear_down():
+        Base.metadata.drop_all(bind=engine)
+
+    request.addfinalizer(tear_down)
+
+    # with transaction.manager:
+    #     dbsession = get_tm_session(SessionFactory, transaction.manager)
+    #     dbsession.query(Entries).delete()
 
     return testapp
 

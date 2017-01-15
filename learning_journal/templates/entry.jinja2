@@ -12,4 +12,5 @@
         {% if request.authenticated_userid %}
           <a href="{{ request.route_url('update', id=entry.id) }}">EDIT</a>
         {% endif %}
+    </div>
 {% endblock %}

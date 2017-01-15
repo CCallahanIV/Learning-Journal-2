@@ -13,6 +13,17 @@
         {% else %}
             <p>This Journal is Empty. =(</p>
         {% endif %}
+        {% if request.authenticated_userid %}
+            <form action = '' method="POST">
+                <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}" />
+                <h3>Title:</h3>
+                <input type="text" name="title" id="entryTitle" placeholder="Enter Title Here...">
+                <h3>Body:</h3>
+                <textarea id="entryBody" name="body" placeholder="Enter Body Here...""></textarea>
+                <input type="submit" id="submitButton">
+            </form>
+        {% endif %}
     </ul>
 </div>
+<script src="{{ request.static_path('learning_journal:static/app.js') }}"></script>
 {% endblock %}
