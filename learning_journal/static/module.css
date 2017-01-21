@@ -6,6 +6,12 @@
     background-color: lightgrey;
 }
 
+#entryListWrapper ul{
+    list-style: none;
+    margin: 0px;
+    padding-left: 2px;
+}
+
 #entryDisplayWrapper{
     width: 80%;
     margin: auto;
@@ -69,4 +75,11 @@ form #submitButton{
 
 #pageTitle{
     text-align: center;
+}
+
+header img {
+    float: right;
+    height: 100px;
+    width: 100px;
+    padding-right: 10px;
 }

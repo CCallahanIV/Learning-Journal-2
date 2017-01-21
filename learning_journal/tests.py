@@ -84,7 +84,17 @@ ENTRIES = [
 ]
 
 
+@pytest.fixture
+def set_auth_credentials():
+    """Make a username/password combo for testing."""
+    import os
+    from passlib.apps import custom_app_context as pwd_context
+
+    os.environ["AUTH_USERNAME"] = "testme"
+    os.environ["AUTH_PASSWORD"] = pwd_context.hash("foobar")
+
 # ======== UNIT TESTS ==========
+
 
 def test_new_entries_are_added(db_session):
     """New expenses get added to the database."""
@@ -127,13 +137,13 @@ def test_create_view_updates_db_on_post(db_session, dummy_request):
 
     query = db_session.query(Entries).all()
     assert query[0].title == "Some Title."
-    assert query[0].body == "Some Body."
+    assert query[0].body[3:-4] == "Some Body."
 
 
 # ======== FUNCTIONAL TESTS ===========
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def testapp(request):
     """Create an instance of webtests TestApp for testing routes.
 
@@ -157,6 +167,7 @@ def testapp(request):
         config.include('pyramid_jinja2')
         config.include('.models')
         config.include('.routes')
+        config.include('.security')
         config.scan()
         return config.make_wsgi_app()
 
@@ -179,7 +190,7 @@ def testapp(request):
     return testapp
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def fill_the_db(testapp):
     """Fill the database with some model instances.
 
@@ -194,6 +205,17 @@ def fill_the_db(testapp):
                 row = Entries(title=entry["title"], creation_date=entry["creation_date"], body=entry["body"])
                 dbsession.add(row)
 
+    return dbsession
+
+
+@pytest.fixture
+def new_session(testapp):
+    """Return a session for inspecting the database."""
+    SessionFactory = testapp.app.registry["dbsession_factory"]
+    with transaction.manager:
+        dbsession = get_tm_session(SessionFactory, transaction.manager)
+    return dbsession
+
 
 def test_home_route_has_list(testapp):
     """The home page has a list in the html."""
@@ -202,29 +224,25 @@ def test_home_route_has_list(testapp):
     assert len(html.find_all("ul")) == 1
 
 
-def test_home_route_with_data_has_filled_list(testapp, fill_the_db):
-    """When there's data in the database, the home page has some rows."""
-    response = testapp.get('/', status=200)
-    html = response.html
-    assert len(html.find_all("li")) == 6
-
-
 def test_home_route_has_list2(testapp):
-    """Without data the home page only has a list."""
+    """Without data the home page has an empty list."""
     response = testapp.get('/', status=200)
     html = response.html
-    assert len(html.find_all("ul")) == 1
+    assert len(html.find_all("li")) == 0
 
 
-def test_create_entry_route_has_form(testapp):
+def test_create_entry_route_forbidden(testapp):
     """Test that the "create" route loads a page with a form."""
-    response = testapp.get('/journal/new-entry', status=200)
-    html = response.html
-    assert len(html.find_all("form")) == 1
+    response = testapp.get('/journal/new-entry', status=403)
+    assert "Forbidden" in response.text
+    assert response.status_code == 403
+
+# ================= LOGGED IN ====================
 
 
-def test_create_view_post_redirects(testapp):
+def test_create_view_post_redirects(set_auth_credentials, testapp):
     """Test that a post request redirects to home."""
+    response = testapp.post("/login", params={"username": "testme", "password": "foobar"})
     post_params = {
         'title': 'Some Title.',
         'body': 'Some Body.'
@@ -233,6 +251,12 @@ def test_create_view_post_redirects(testapp):
     full_response = response.follow()
     assert response.text[0:3] == '302'
     assert len(full_response.html.find_all(id='entryListWrapper')) == 1
+
+
+def test_entry_route_not_found(testapp):
+    """Test that requesting a non-existing entry returns a 404."""
+    response = testapp.get('/journal/99999999', status=404)
+    assert response.status_code == 404
 
 
 def test_create_view_adds_to_db(testapp):
@@ -244,6 +268,13 @@ def test_create_view_adds_to_db(testapp):
     response = testapp.post('/journal/new-entry', post_params, status=302)
     full_response = response.follow()
     assert full_response.html.find(class_='entryListItem').a.text == post_params["title"]
+
+
+def test_home_route_with_data_has_filled_list(testapp, fill_the_db):
+    """When there's data in the database, the home page has some rows."""
+    response = testapp.get('/', status=200)
+    html = response.html
+    assert len(html.find_all("li")) == 6
 
 
 def test_update_route_has_populated_form(testapp, fill_the_db):

@@ -1,8 +1,7 @@
 $(document).ready(function(){
-    $("#submitButton").on("click", function(e){
+    $("#homeSubmitButton").on("click", function(e){
         e.preventDefault()
         entry = $(this).parent().serializeArray()
-        console.log(entry)
         $.ajax({
             method: 'POST',
             url: '/journal/new-entry',
@@ -12,11 +11,11 @@ $(document).ready(function(){
                 "body": entry[2]["value"]
             }, 
             success: function(result){
-                console.log($(".entryListItem a").first().attr('href').split('/')[4])
+                new_id = parseInt($(".entryListItem a").first().attr('href').split('/')[4]) + 1
                 $(".entryListItem").first().prepend(
                     "<li class='entryListItem'>" +
-                    "<h3><a href=" +  + ">{{ entry.title }}</a></h3>" +
-                    "<p class='date'>Created {{ entry.creation_date }}</p>" +
+                    "<h3><a href=\"journal/" + new_id + "\">" + entry[1]["value"] + "</a></h3>" +
+                    "<p class='date'>Created " + Date.now() + " </p>" +
                     "<hr />" +
                     "</li>"
                 )

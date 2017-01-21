@@ -2,11 +2,15 @@ appnope==0.1.0
 beautifulsoup4==4.5.1
 coverage==4.2
 decorator==4.0.10
+future==0.16.0
 ipython==5.1.0
 ipython-genutils==0.1.0
 Jinja2==2.8
 Mako==1.0.6
+Markdown==2.6.7
 MarkupSafe==0.23
+numpy==1.11.3
+oauthlib==2.0.1
 passlib==1.7.0
 PasteDeploy==1.5.2
 pexpect==4.2.1
@@ -25,7 +29,11 @@ pyramid-mako==1.0.2
 pyramid-tm==1.1.1
 pytest==3.0.5
 pytest-cov==2.4.0
+python-twitter==3.2
 repoze.lru==0.6
+requests==2.12.4
+requests-oauthlib==0.7.0
+scipy==0.18.1
 simplegeneric==0.8.1
 six==1.10.0
 SQLAlchemy==1.1.4

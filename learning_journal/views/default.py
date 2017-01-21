@@ -9,6 +9,7 @@ from learning_journal.models import Entries
 from learning_journal.security import check_credentials
 from pyramid.security import remember, forget
 
+import markdown
 import twitter
 import os
 
@@ -44,8 +45,10 @@ def home_view(request):
 @view_config(route_name='create', renderer='../templates/create_entry.jinja2', permission='author')
 def create_view(request):
     if request.method == "POST":
+        md = markdown.Markdown()
         entry = request.POST
-        row = Entries(title=entry["title"], creation_date=date.today(), body=entry["body"])
+        entry_html = md.convert(entry["body"])
+        row = Entries(title=entry["title"], creation_date=date.today(), body=entry_html)
         request.dbsession.add(row)
         return HTTPFound(request.route_url("home"))
     return {}
@@ -81,6 +84,7 @@ def delete_view(request):
     if request.authenticated_userid:
         entry = request.dbsession.query(Entries).get(the_id)
         request.dbsession.delete(entry)
+        return HTTPFound(request.route_url("home"))
     return HTTPFound(request.route_url("home"))
 
 
@@ -88,16 +92,15 @@ def delete_view(request):
 def tweet_view(request):
     """Handle tweeting the title of a post with link to post."""
     the_id = request.matchdict["id"]
-    if request.authenticated_userid:
-        twitter_api = twitter.Api(
-            consumer_key=os.environ.get("TWITTER_CONSUMER_KEY", None),
-            consumer_secret=os.environ.get("TWITTER_SECRET", None),
-            access_token_key=os.environ.get("TWITTER_ACCESS_TOKEN", None),
-            access_token_secret=os.environ.get("TWITTER_ACCESS_TOKEN_SECRET", None)
-        )
-        post_url = "https://tedsbetterlearningjournal.herokuapp.com/journal/" + the_id
-        title = request.dbsession.query(Entries).get(the_id).title
-        twitter_api.PostUpdate(title + '\n' + post_url)
+    twitter_api = twitter.Api(
+        consumer_key=os.environ.get("TWITTER_CONSUMER_KEY", None),
+        consumer_secret=os.environ.get("TWITTER_SECRET", None),
+        access_token_key=os.environ.get("TWITTER_ACCESS_TOKEN", None),
+        access_token_secret=os.environ.get("TWITTER_ACCESS_TOKEN_SECRET", None)
+    )
+    post_url = "https://tedsbetterlearningjournal.herokuapp.com/journal/" + the_id
+    title = request.dbsession.query(Entries).get(the_id).title
+    twitter_api.PostUpdate(title + '\n' + post_url)
 
     return HTTPFound(request.route_url("home"))
 

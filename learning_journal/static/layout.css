@@ -8,11 +8,28 @@ header a{
     font-family: Share Tech Mono;
     color: white;
     line-height: 40px;
-    padding-left: 8px;
+    margin-left: 12px;
+}
+
+header a:hover {
+    border-bottom: 2px solid white;
 }
 
 main {
     width: 90%;
     height: 100%;
     margin: auto;
+}
+
+.entryEditList li{
+    display: inline;
+    margin-left: 12px;
+}
+
+.entryEditList a{
+    color: black;
+}
+
+.entryEditList a:hover{
+    border-bottom: 2px solid black;
 }

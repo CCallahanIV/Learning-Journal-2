@@ -7,13 +7,13 @@
                 <p id="author">by Ted Callahan</p>
         </div>
         <div id=#entryWrapper>
-           {{ entry.body|e }}
+           {{ entry.body|safe }}
         </div>
         {% if request.authenticated_userid %}
         <ul class="entryEditList">
-          <li><a href="{{ request.route_url('update', id=entry.id) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>EDIT</a></li>
-          <li><a href="{{ request.route_url('delete', id=entry.id) }}"><i class="fa fa-trash-o" aria-hidden="true"></i>DELETE</a></li>
-          <li><a href="{{ request.route_url('tweet', id=entry.id) }}"><i class="fa fa-twitter" aria-hidden="true"></i>TWEET</a></li>
+          <li><a href="{{ request.route_url('update', id=entry.id) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> EDIT</a></li>
+          <li><a href="{{ request.route_url('delete', id=entry.id) }}"><i class="fa fa-trash-o" aria-hidden="true"></i> DELETE</a></li>
+          <li><a href="{{ request.route_url('tweet', id=entry.id) }}"><i class="fa fa-twitter" aria-hidden="true"></i> TWEET</a></li>
         </ul>
         {% endif %}
     </div>

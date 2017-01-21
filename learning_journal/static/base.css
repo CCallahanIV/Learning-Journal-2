@@ -17,3 +17,8 @@ h2{
 h3{
     font-size:1.25em;
 }
+
+body, main{
+    margin: 0px;
+    width: 100%;
+}

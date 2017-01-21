@@ -6,7 +6,6 @@
         <meta charset-"UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href='https://fonts.googleapis.com/css?family=Share+Tech+Mono' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" href="{{ request.static_path('learning_journal:static/reset.css') }}">
         <link rel="stylesheet" href="{{ request.static_path('learning_journal:static/base.css') }}">
         <link rel="stylesheet" href="{{ request.static_path('learning_journal:static/layout.css') }}">
         <link rel="stylesheet" href="{{ request.static_path('learning_journal:static/module.css') }}">
@@ -21,6 +20,7 @@
         {% else %}
           <a href="{{ request.route_url('login') }}">Login</a>
         {% endif %}
+        <img class="headerPic" src="{{ request.static_path('learning_journal:static/assets/awesome.png') }}" alt="awesome">
     </header>
     <main>
         {% block body %}{% endblock %}
@@ -29,5 +29,6 @@
   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
   crossorigin="anonymous"></script>
     <script src="https://use.fontawesome.com/927692b4ce.js"></script>
+    <script src="{{ request.static_path('learning_journal:static/app.js') }}"></script>
     </body>
 </html>
